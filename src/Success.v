@@ -17,18 +17,20 @@ Arguments leftovers {_} {_} {_} {_}.
 
 Section Success.
 
-Variables (Toks : nat -> Type) (Tok : Type).
-Variables (A B C : Type).
+Context {Toks : nat -> Type} {Tok : Type} {A B C : Type} {n : nat}.
 
-Definition map (f : A -> B) : [ Success Toks Tok A :-> Success Toks Tok B ] :=
-  fun _ s => MkSuccess (f (value s)) (small s) (leftovers s).
+Definition map (f : A -> B) : Success Toks Tok A n -> Success Toks Tok B n :=
+  fun s => MkSuccess (f (value s)) (small s) (leftovers s).
+
+Definition guardM (f : A -> option B) : Success Toks Tok A n -> option (Success Toks Tok B n) :=
+  fun s => option_map (fun b => MkSuccess b (small s) (leftovers s)) (f (value s)).
 
 Definition lift {m n : nat} (p : m <= n) (s : Success Toks Tok A m) :
                 Success Toks Tok A n :=
   let small := le_trans _ _ _  (small s) p
   in MkSuccess (value s) small (leftovers s).
 
-Definition fromView : [ View Toks Tok :-> Success Toks Tok Tok ] := fun n =>
+Definition fromView : View Toks Tok n -> Success Toks Tok Tok n :=
 match n return View Toks Tok n -> Success Toks Tok Tok n with
   | O    => False_rect _
   | S n' => prod_curry (fun t ts => MkSuccess t (le_refl _) ts)
@@ -36,9 +38,5 @@ end.
 
 End Success.
 
-Arguments map {_} {_} {_} {_}.
-Arguments lift {_} {_} {_} {_} {_}.
-Arguments fromView {_} {_}.
-
-Definition getTok {Toks} {Tok} `{Sized Toks Tok} : [ Toks :-> option :o Success Toks Tok Tok ] :=
-  fun _ ts => option_map (fromView _) (uncons ts).
+Definition getTok {Toks} {Tok} `{Sized Toks Tok} {n} : Toks n -> option (Success Toks Tok Tok n) :=
+  fun ts => option_map fromView (uncons ts).

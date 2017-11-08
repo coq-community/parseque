@@ -32,6 +32,12 @@ Definition fail {F : Type -> Type} `{RawAlternative F} {A : Type} : F A :=
 Definition alt {F : Type -> Type} `{RawAlternative F} {A : Type} : F A -> F A -> F A :=
   _alt _.
 
+Definition fromOption {F : Type -> Type} `{RawAlternative F} {A : Type} (v : option A) : F A :=
+match v with
+ | None   => fail
+ | Some a => pure a
+end.
+
 Arguments MkRawAlternative {_} {_} {_}.
 
 Class RawMonad (F : Type -> Type) `{RawApplicative F} :=

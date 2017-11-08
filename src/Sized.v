@@ -1,29 +1,20 @@
 Require Import Indexed.
 
-Section Sized.
-
-Variable (As : nat -> Type).
-Variable (A : Type).
-
-Definition View (n : nat) : Type :=
+Definition View (As : nat -> Type) (A : Type) (n : nat) : Type :=
 match n with
   | O    => False
   | S n' => A * As n'
 end.
 
-Definition view {B : nat -> Type} (f : forall n, A -> As n -> B (S n)) (n : nat) : View n -> B n :=
-match n return View n -> B n with
+Class Sized As A : Type := MkSized { uncons {n} : As n -> option (View As A n) }.
+
+Arguments MkSized {_} {_}.
+
+Definition view {As A B} (f : forall n, A -> As n -> B (S n)) {n : nat} : View As A n -> B n :=
+match n return View As A n -> B n with
   | O    => fun hf => False_rect _ hf
   | S n' => fun vw => prod_curry (f _) vw
 end.
-
-Class Sized : Type := MkSized { uncons : [ As :-> option :o View ] }.
-
-End Sized.
-
-Arguments view {_} {_} {_} _ {_}.
-Arguments MkSized {_} {_}.
-Arguments uncons {_} {_} {_} {_}.
 
 Require Import Vector.
 
