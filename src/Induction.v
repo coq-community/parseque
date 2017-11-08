@@ -12,7 +12,7 @@ Arguments MkBox {_} {_}.
 
 Section Induction.
 
-Variables (A B C : nat -> Type).
+Context {A B C : nat -> Type}.
 
 Definition map (f : [ A :-> B ]) : [ Box A :-> Box B ] :=
   fun _ b => MkBox (fun _ mltn => f _ (call b mltn)).
@@ -41,15 +41,12 @@ fix rec n := match n with
              in call (rec n') mltn')))
 end.
 
-Definition Fix (alg : [ Box A :-> A ]) : [ A ] := extract (FixBox alg).
+Definition le_close (down : forall m n, m <= n -> A n -> A m) : [ A :-> Box A ] :=
+  fun _ a => MkBox (fun m mltn => down _ _ (Nat.lt_le_incl _ _ mltn) a).
 
 End Induction.
 
-Arguments map {_} {_}.
-Arguments map2 {_} {_} {_}.
-Arguments app {_} {_}.
-Arguments extract {_}.
-Arguments duplicate {_}.
+Definition Fix A (alg : [ Box A :-> A ]) : [ A ] := extract (FixBox alg).
 
 Definition Loeb A : [ Box (Box A :-> A) :-> Box A ] :=
   Fix _ (fun _ r alg => app _ alg (app _ r (duplicate _ alg))).
