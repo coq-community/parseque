@@ -53,6 +53,16 @@ Definition andmbind `{RawAlternative M} `{RawMonad M} (p : Parser Toks Tok M A n
   Category.alt (fmap combine (runParser (call (q (value sa)) salen) (le_refl _) (leftovers sa)))
                (pure (Success.map (fun a => (a , None)) sa)))).
 
+(* This could be implemented in terms of andmbind + guardM but for
+   efficiency reasons we give a direct implementation *)
+
+Definition bind `{RawAlternative M} `{RawMonad M} (p : Parser Toks Tok M A n)
+  (q : A -> Box (Parser Toks Tok M B) n) : Parser Toks Tok M B n :=
+  MkParser (fun _ mlen ts => bind (runParser p mlen ts) (fun sa =>
+  let salen  := lt_le_trans _ _ _ (small sa) mlen in
+  let adjust := Success.lift (Nat.lt_le_incl _ _ (small sa)) in
+  fmap adjust (runParser (call (q (value sa)) salen) (le_refl _) (leftovers sa)))).
+
 End Combinators1.
 
 Section Combinators2.
@@ -67,11 +77,13 @@ Definition guard `{RawAlternative M} `{RawMonad M} (f : A -> bool)
   (p : Parser Toks Tok M A n) : Parser Toks Tok M A n :=
   guardM (fun a => if f a then Some a else None) p.
 
+
 End Combinators2.
 
 Notation "p <|> q"   := (alt p q)  (at level 40, left associativity).
 Notation "f <$> p"   := (map f p)  (at level 60, right associativity).
 Notation "b <$ p"    := (cmap b p) (at level 60, right associativity).
 Notation "p &?>>= q" := (andmbind p q) (at level 60, right associativity).
+Notation "p >>= q"   := (bind p q)     (at level 60, right associativity).
 
 Coercion box : Parser >-> Box.
