@@ -46,11 +46,11 @@ Definition alt `{RawAlternative M} (p q : Parser Toks Tok M A n) :
   alt (runParser p mlen toks) (runParser q mlen toks)).
 
 Definition andmbind `{RawAlternative M} `{RawMonad M} (p : Parser Toks Tok M A n)
-  (q : A -> Parser Toks Tok M B n) : Parser Toks Tok M (A * option B) n :=
+  (q : A -> Box (Parser Toks Tok M B) n) : Parser Toks Tok M (A * option B) n :=
   MkParser (fun _ mlen ts => bind (runParser p mlen ts) (fun sa =>
-  let salen   := le_trans _ _ _ (Nat.lt_le_incl _ _ (small sa)) mlen in
+  let salen   := lt_le_trans _ _ _ (small sa) mlen in
   let combine := fun sb => Success.map (fun p => (fst p, Some (snd p))) (Success.and sa sb) in
-  Category.alt (fmap combine (runParser (q (value sa)) salen (leftovers sa)))
+  Category.alt (fmap combine (runParser (call (q (value sa)) salen) (le_refl _) (leftovers sa)))
                (pure (Success.map (fun a => (a , None)) sa)))).
 
 End Combinators1.
