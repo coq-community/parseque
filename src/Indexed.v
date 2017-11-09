@@ -2,9 +2,7 @@ Section Indexed.
 
 Local Open Scope type.
 
-Variable (I : Type).
-Variable (T : Type).
-Variable (A B : I -> Type).
+Context {I : Type} (T : Type) (A B : I -> Type).
 
 Definition IArrow : I -> Type :=
   fun i => A i -> B i.
@@ -25,13 +23,6 @@ Definition IForall : Type :=
   forall {i}, A i.
 
 End Indexed.
-
-Arguments IArrow    {_}.
-Arguments ISum      {_}.
-Arguments IProduct  {_}.
-Arguments IConstant {_}.
-Arguments ICompose  {_}.
-Arguments IForall   {_}.
 
 Notation "T :o A"  := (ICompose A T) (at level 10, right associativity).
 Notation "A :-> B" := (IArrow A B)   (at level 20, right associativity).
