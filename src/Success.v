@@ -1,6 +1,7 @@
 Require Import Indexed.
 Require Import Sized.
 Require Import Coq.Arith.Le.
+Require Import Coq.Arith.Lt.
 
 Record Success (Toks : nat -> Type) (Tok : Type) (A : Type) (n : nat) :=
   MkSuccess { value     : A
@@ -29,6 +30,10 @@ Definition lift {m n : nat} (p : m <= n) (s : Success Toks Tok A m) :
                 Success Toks Tok A n :=
   let small := le_trans _ _ _  (small s) p
   in MkSuccess (value s) small (leftovers s).
+
+Definition and (p : Success Toks Tok A n) (q : Success Toks Tok B (size p)) :
+  Success Toks Tok (A * B) n :=
+  MkSuccess (value p, value q) (lt_trans _ _ _ (small q) (small p)) (leftovers q).
 
 Definition fromView : View Toks Tok n -> Success Toks Tok Tok n :=
 match n return View Toks Tok n -> Success Toks Tok Tok n with
