@@ -35,6 +35,9 @@ Definition map `{RawFunctor M} (f : A -> B) (p : Parser Toks Tok M A n) :
   Parser Toks Tok M B n := MkParser (fun _ mlen toks =>
   fmap (Success.map f) (runParser p mlen toks)).
 
+Definition cmap `{RawFunctor M} (b : B) (p : Parser Toks Tok M A n) :
+  Parser Toks Tok M B n := map (fun _ => b) p.
+
 Definition fail `{RawAlternative M} : Parser Toks Tok M A n :=
   MkParser (fun _ _ _ => fail).
 
@@ -65,3 +68,10 @@ Definition guard `{RawAlternative M} `{RawMonad M} (f : A -> bool)
   guardM (fun a => if f a then Some a else None) p.
 
 End Combinators2.
+
+Notation "p <|> q"   := (alt p q)  (at level 40, left associativity).
+Notation "f <$> p"   := (map f p)  (at level 60, right associativity).
+Notation "b <$ p"    := (cmap b p) (at level 60, right associativity).
+Notation "p &?>>= q" := (andmbind p q) (at level 60, right associativity).
+
+Coercion box : Parser >-> Box.
