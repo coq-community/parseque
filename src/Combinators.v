@@ -59,7 +59,7 @@ Definition alt `{RawAlternative M} (p q : Parser Toks Tok M A n) :
   Parser Toks Tok M A n := MkParser (fun _ mlen toks =>
   alt (runParser p mlen toks) (runParser q mlen toks)).
 
-Program Definition alts `{RawAlternative M} (ps : list (Parser Toks Tok M A n)) :
+Definition alts `{RawAlternative M} (ps : list (Parser Toks Tok M A n)) :
   Parser Toks Tok M A n := List.fold_right alt fail ps.
 
 Definition andmbind `{RawAlternative M} `{RawMonad M} (p : Parser Toks Tok M A n)
