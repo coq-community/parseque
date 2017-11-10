@@ -170,10 +170,11 @@ Context {Toks : nat -> Type} {Tok : Type} {M : Type -> Type} {A B : Type}.
 Definition LChain (n : nat) : Type :=
   Success Toks Tok A n -> Box (Parser Toks Tok M (A -> A)) n -> M (Success Toks Tok A n).
 
-Definition schainl_aux `{RawMonad M}
-  (n : nat) (rec : Box LChain n) : LChain n := fun sa op =>
+Definition schainl_aux `{RawMonad M} (n : nat) (rec : Box LChain n) : LChain n := fun sa op =>
   Category.bind (runParser (call op (small sa)) (le_refl _) (leftovers sa)) (fun sop =>
-  pure (Success.map (fun f => f (value sa)) (lt_lift (small sa) sop))).
+  let sa' := Success.map (fun f => f (value sa)) sop in
+  Category.bind (call rec (small sa) sa' (Induction.lt_lower (small sa) op)) (fun res =>
+  pure (lt_lift (small sa) res))).
 
 Definition schainl `{RawAlternative M} `{RawMonad M} {n : nat} : LChain n :=
   Fix LChain (fun n rec sa op => Category.alt (schainl_aux n rec sa op) (pure sa)) n.
