@@ -15,10 +15,20 @@ Record Parser (Toks : nat -> Type) (Tok : Type)
 Arguments MkParser {_} {_} {_} {_} {_}.
 Arguments runParser {_} {_} {_} {_} {_} _ {_}.
 
+Section Lower.
+
+Context {Toks : nat -> Type} {Tok : Type} {M : Type -> Type} {A : Type} {m n : nat}.
+
+Definition le_lower (mlen : m <= n) (p : Parser Toks Tok M A n) : Parser Toks Tok M A m :=
+  MkParser (fun _ plem => runParser p (le_trans _ _ _ plem mlen)).
+
+Definition lt_lower (mltn : m < n) (p : Parser Toks Tok M A n) : Parser Toks Tok M A m :=
+  le_lower (Nat.lt_le_incl _ _ mltn) p.
+
+End Lower.
+
 Definition box {Toks Tok M A n} : Parser Toks Tok M A n -> Box (Parser Toks Tok M A) n :=
-  le_close (fun _ _ mlen p => MkParser (fun _ llem ts =>
-    let mlep := le_trans _ _ _ llem mlen
-    in runParser p mlep ts)) _.
+  le_close (fun _ _ => le_lower) _.
 
 Coercion box : Parser >-> Box.
 
