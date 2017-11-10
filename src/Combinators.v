@@ -4,6 +4,7 @@ Require Import Coq.Arith.PeanoNat.
 Require Import Induction.
 Require Import Sized.
 Require Import Success.
+Require Import EqDec.
 Require Import Category.
 
 Record Parser (Toks : nat -> Type) (Tok : Type)
@@ -46,6 +47,9 @@ Definition fail `{RawAlternative M} : Parser Toks Tok M A n :=
 Definition alt `{RawAlternative M} (p q : Parser Toks Tok M A n) :
   Parser Toks Tok M A n := MkParser (fun _ mlen toks =>
   alt (runParser p mlen toks) (runParser q mlen toks)).
+
+Program Definition alts `{RawAlternative M} (ps : list (Parser Toks Tok M A n)) :
+  Parser Toks Tok M A n := List.fold_right alt fail ps.
 
 Definition andmbind `{RawAlternative M} `{RawMonad M} (p : Parser Toks Tok M A n)
   (q : A -> Box (Parser Toks Tok M B) n) : Parser Toks Tok M (A * option B) n :=
@@ -126,6 +130,12 @@ Context {Toks : nat -> Type} {Tok : Type} {M : Type -> Type} {A B C : Type} {n :
 Definition app `{RawMonad M} (p : Parser Toks Tok M (A -> B) n)
   (q : Box (Parser Toks Tok M A) n) : Parser Toks Tok M B n :=
   bind p (fun f => Induction.map (fun _ => map (fun t => f t)) _ q).
+
+Definition exact `{RawAlternative M} `{RawMonad M} `{Sized Toks Tok} `{EqDec Tok} (t : Tok)
+  : Parser Toks Tok M Tok n := guardM (fun t' => if eq_dec t t' then Some t else None) anyTok.
+
+Definition anyOf `{RawAlternative M} `{RawMonad M} `{Sized Toks Tok} `{EqDec Tok}
+  (ts : list Tok) : Parser Toks Tok M Tok n := alts (List.map exact ts).
 
 Definition between `{RawMonad M} (open : Parser Toks Tok M A n) (close : Box (Parser Toks Tok M C) n)
   (p : Box (Parser Toks Tok M B) n) : Parser Toks Tok M B n :=
