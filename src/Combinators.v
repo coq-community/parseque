@@ -62,8 +62,7 @@ Definition andbind `{RawMonad M} (p : Parser Toks Tok M A n)
   (q : A -> Box (Parser Toks Tok M B) n) : Parser Toks Tok M (A * B) n :=
   MkParser (fun _ mlen ts => bind (runParser p mlen ts) (fun sa =>
   let salen  := lt_le_trans _ _ _ (small sa) mlen in
-  let adjust := fun sb => Success.map (pair (value sa))
-                          (Success.lift (Nat.lt_le_incl _ _ (small sa)) sb) in
+  let adjust := fun sb => Success.map (pair (value sa)) (Success.lt_lift (small sa) sb) in
   fmap adjust (runParser (call (q (value sa)) salen) (le_refl _) (leftovers sa)))).
 
 Definition and `{RawMonad M} (p : Parser Toks Tok M A n) (q : Box (Parser Toks Tok M B) n) :
@@ -137,6 +136,47 @@ Definition betweenm `{RawAlternative M} `{RawMonad M} (open : Parser Toks Tok M 
   landm (rmand open p) close.
 
 End Combinators3.
+
+Section HChainl.
+
+Context {Toks : nat -> Type} {Tok : Type} {M : Type -> Type} {A B : Type}.
+
+Definition LChain (n : nat) : Type :=
+  Success Toks Tok A n -> Box (Parser Toks Tok M (A -> A)) n -> M (Success Toks Tok A n).
+
+Definition schainl_aux `{RawMonad M}
+  (n : nat) (rec : Box LChain n) : LChain n := fun sa op =>
+  Category.bind (runParser (call op (small sa)) (le_refl _) (leftovers sa)) (fun sop =>
+  pure (Success.map (fun f => f (value sa)) (lt_lift (small sa) sop))).
+
+Definition schainl `{RawAlternative M} `{RawMonad M} {n : nat} : LChain n :=
+  Fix LChain (fun n rec sa op => Category.alt (schainl_aux n rec sa op) (pure sa)) n.
+
+Definition iteratel `{RawMonad M} `{RawAlternative M} {n} (val : Parser Toks Tok M A n)
+  (op : Box (Parser Toks Tok M (A -> A)) n) : Parser Toks Tok M A n :=
+  MkParser (fun _ mlen ts => Category.bind (runParser val mlen ts)
+           (fun sa => schainl sa (le_lower mlen op))).
+
+Definition hchainl `{RawMonad M} `{RawAlternative M} {n}
+  (seed : Parser Toks Tok M A n) (op : Box (Parser Toks Tok M (A -> B -> A)) n)
+  (arg : Box (Parser Toks Tok M B) n) : Parser Toks Tok M A n :=
+  let op'  := Induction.map (fun _ => map (fun f b a => f a b)) _ op in
+  let arg' := duplicate _ arg in
+  iteratel seed (map2 (fun _ => app) _ op' arg').
+
+End HChainl.
+
+Section Chains.
+
+Context {Toks : nat -> Type} {Tok : Type} {M : Type -> Type} {A : Type} {n : nat}.
+
+Definition chainl1 `{RawMonad M} `{RawAlternative M} (p : Parser Toks Tok M A n)
+  (op : Box (Parser Toks Tok M (A -> A -> A)) n) : Parser Toks Tok M A n :=
+  hchainl p op p.
+
+End Chains.
+
+
 
 (* TODO: fix the fixity levels *)
 Notation "p <|> q"   := (alt p q)  (at level 40, left associativity).

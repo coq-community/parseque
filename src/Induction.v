@@ -44,6 +44,12 @@ end.
 Definition le_close (down : forall m n, m <= n -> A n -> A m) : [ A :-> Box A ] :=
   fun _ a => MkBox (fun m mltn => down _ _ (Nat.lt_le_incl _ _ mltn) a).
 
+Definition le_lower {m n : nat} (mlen : m <= n) (b : Box A n) : Box A m :=
+  MkBox (fun p pltm => call b (lt_le_trans _ _ _ pltm mlen)).
+
+Definition lt_lower {m n : nat} (mltn : m < n) (b : Box A n) : Box A m :=
+  MkBox (fun p pltm => call b (lt_trans _ _ _ pltm mltn)).
+
 End Induction.
 
 Definition Fix A (alg : [ Box A :-> A ]) : [ A ] := extract (FixBox alg).

@@ -2,6 +2,7 @@ Require Import Indexed.
 Require Import Sized.
 Require Import Coq.Arith.Le.
 Require Import Coq.Arith.Lt.
+Require Import PeanoNat.
 
 Record Success (Toks : nat -> Type) (Tok : Type) (A : Type) (n : nat) :=
   MkSuccess { value     : A
@@ -26,10 +27,13 @@ Definition map (f : A -> B) : Success Toks Tok A n -> Success Toks Tok B n :=
 Definition guardM (f : A -> option B) : Success Toks Tok A n -> option (Success Toks Tok B n) :=
   fun s => option_map (fun b => MkSuccess b (small s) (leftovers s)) (f (value s)).
 
-Definition lift {m n : nat} (p : m <= n) (s : Success Toks Tok A m) :
-                Success Toks Tok A n :=
+Definition le_lift {m n : nat} (p : m <= n) (s : Success Toks Tok A m) :
+  Success Toks Tok A n :=
   let small := le_trans _ _ _  (small s) p
   in MkSuccess (value s) small (leftovers s).
+
+Definition lt_lift {m n : nat} (p : m < n) (s : Success Toks Tok A m) :
+  Success Toks Tok A n := le_lift (Nat.lt_le_incl _ _ p) s.
 
 Definition and (p : Success Toks Tok A n) (q : Success Toks Tok B (size p)) :
   Success Toks Tok (A * B) n :=
