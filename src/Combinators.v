@@ -5,6 +5,7 @@ Require Import Induction.
 Require Import Sized.
 Require Import Success.
 Require Import EqDec.
+Require Import NEList.
 Require Import Category.
 
 Record Parser (Toks : nat -> Type) (Tok : Type)
@@ -137,6 +138,11 @@ Definition exact `{RawAlternative M} `{RawMonad M} `{Sized Toks Tok} `{EqDec Tok
 Definition anyOf `{RawAlternative M} `{RawMonad M} `{Sized Toks Tok} `{EqDec Tok}
   (ts : list Tok) : Parser Toks Tok M Tok n := alts (List.map exact ts).
 
+Definition exacts `{RawAlternative M} `{RawMonad M} `{Sized Toks Tok} `{EqDec Tok}
+  (ts : NEList Tok) : Parser Toks Tok M (NEList Tok) n :=
+  foldr1 (fun xs ys => map (prod_curry append) (and xs ys))
+         (NEList.map (fun t => map singleton (exact t)) ts).
+
 Definition between `{RawMonad M} (open : Parser Toks Tok M A n) (close : Box (Parser Toks Tok M C) n)
   (p : Box (Parser Toks Tok M B) n) : Parser Toks Tok M B n :=
   land (rand open p) close.
@@ -165,7 +171,23 @@ Definition schainl `{RawAlternative M} `{RawMonad M} {n : nat} : LChain n :=
 Definition iteratel `{RawMonad M} `{RawAlternative M} {n} (val : Parser Toks Tok M A n)
   (op : Box (Parser Toks Tok M (A -> A)) n) : Parser Toks Tok M A n :=
   MkParser (fun _ mlen ts => Category.bind (runParser val mlen ts)
-           (fun sa => schainl sa (le_lower mlen op))).
+           (fun sa => schainl sa (Induction.le_lower mlen op))).
+
+Definition RChain (n : nat) : Type :=
+  Parser Toks Tok M (A -> A) n -> Parser Toks Tok M A n -> Parser Toks Tok M A n.
+
+Definition iterater_aux `{RawMonad M} (n : nat) (rec : Box RChain n) :
+  RChain n := fun op val => MkParser (fun _ mlen ts =>
+  Category.bind (runParser op mlen ts) (fun sop =>
+  let sopltn := lt_le_trans _ _ _ (small sop) mlen in
+  let op'    := lt_lower sopltn op in
+  let val'   := lt_lower sopltn val in
+  Category.bind (runParser (call rec sopltn op' val') (le_refl _) (leftovers sop)) (fun res =>
+  pure (lt_lift (small sop) (Success.map (value sop) res))))).
+
+Definition iterater `{RawMonad M} `{RawAlternative M} {n} (op : Parser Toks Tok M (A -> A) n)
+  (val : Parser Toks Tok M A n) : Parser Toks Tok M A n :=
+  Fix _ (fun n rec op val => alt (iterater_aux n rec op val) val) n op val.
 
 Definition hchainl `{RawMonad M} `{RawAlternative M} {n}
   (seed : Parser Toks Tok M A n) (op : Box (Parser Toks Tok M (A -> B -> A)) n)
@@ -184,9 +206,10 @@ Definition chainl1 `{RawMonad M} `{RawAlternative M} (p : Parser Toks Tok M A n)
   (op : Box (Parser Toks Tok M (A -> A -> A)) n) : Parser Toks Tok M A n :=
   hchainl p op p.
 
+Definition nelist `{RawAlternative M} `{RawMonad M} (p : Parser Toks Tok M A n) :
+  Parser Toks Tok M (NEList A) n := iterater (map cons p) (map singleton p).
+
 End Chains.
-
-
 
 (* TODO: fix the fixity levels *)
 Notation "p <|> q"   := (alt p q)  (at level 40, left associativity).

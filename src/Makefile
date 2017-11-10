@@ -3,6 +3,7 @@ all:
 	coqc Induction.v
 	coqc Sized.v
 	coqc EqDec.v
+	coqc NEList.v
 	coqc Category.v
 	coqc Success.v
 	coqc Combinators.v
