@@ -115,7 +115,28 @@ Definition rmand `{RawAlternative M} `{RawMonad M} (p : Parser Toks Tok M A n) (
 Definition randm `{RawAlternative M} `{RawMonad M} (p : Parser Toks Tok M A n)
   (q : Box (Parser Toks Tok M B) n) : Parser Toks Tok M (option B) n := map snd (andm p q).
 
+Definition sum `{RawAlternative M} (p : Parser Toks Tok M A n) (q : Parser Toks Tok M B n) :
+  Parser Toks Tok M (A + B) n := alt (map inl p) (map inr q).
+
 End Combinators2.
+
+Section Combinators3.
+
+Context {Toks : nat -> Type} {Tok : Type} {M : Type -> Type} {A B C : Type} {n : nat}.
+
+Definition app `{RawMonad M} (p : Parser Toks Tok M (A -> B) n)
+  (q : Box (Parser Toks Tok M A) n) : Parser Toks Tok M B n :=
+  bind p (fun f => Induction.map (fun _ => map (fun t => f t)) _ q).
+
+Definition between `{RawMonad M} (open : Parser Toks Tok M A n) (close : Box (Parser Toks Tok M C) n)
+  (p : Box (Parser Toks Tok M B) n) : Parser Toks Tok M B n :=
+  land (rand open p) close.
+
+Definition betweenm `{RawAlternative M} `{RawMonad M} (open : Parser Toks Tok M A n)
+  (close : Box (Parser Toks Tok M C) n) (p : Parser Toks Tok M B n) : Parser Toks Tok M B n :=
+  landm (rmand open p) close.
+
+End Combinators3.
 
 (* TODO: fix the fixity levels *)
 Notation "p <|> q"   := (alt p q)  (at level 40, left associativity).
@@ -133,5 +154,7 @@ Notation "p &?> q"   := (randm p q)    (at level 60, right associativity).
 Notation "p <?&> q"  := (mand p q)     (at level 60, right associativity).
 Notation "p <?& q"   := (lmand p q)    (at level 60, right associativity).
 Notation "p ?&> q"   := (rmand p q)    (at level 60, right associativity).
+Notation "p <*> q"   := (app p q)      (at level 60, right associativity).
+Notation "p <+> q"   := (sum p q)      (at level 60, right associativity).
 
 
