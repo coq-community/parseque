@@ -10,6 +10,8 @@ all:
 	coqc StringAsList.v
 	coqc Char.v
 	coqc Numbers.v
+	coqc Parseque.v
+	coqc Examples.v
 
 clean:
 	rm -f *.vo *.glob

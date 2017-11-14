@@ -236,22 +236,22 @@ Definition nelist : Parser Toks Tok M A n -> Parser Toks Tok M (NEList A) n :=
 End Chains.
 
 (* TODO: fix the fixity levels *)
-Notation "p <|> q"   := (alt p q)  (at level 40, left associativity).
-Notation "f <$> p"   := (map f p)  (at level 60, right associativity).
-Notation "b <$ p"    := (cmap b p) (at level 60, right associativity).
+Notation "p <|> q"   := (alt p q)  (at level 60, right associativity).
+Notation "f <$> p"   := (map f p)  (at level 59, right associativity).
+Notation "b <$ p"    := (cmap b p) (at level 59, right associativity).
 Notation "p &?>>= q" := (andmbind p q) (at level 60, right associativity).
 Notation "p &>>= q"  := (andbind p q)  (at level 60, right associativity).
 Notation "p >>= q"   := (bind p q)     (at level 60, right associativity).
-Notation "p <&> q"   := (and p q)      (at level 60, right associativity).
-Notation "p <&  q"   := (land p q)     (at level 60, right associativity).
-Notation "p  &> q"   := (rand p q)     (at level 60, right associativity).
-Notation "p <&?> q"  := (andm p q)     (at level 60, right associativity).
-Notation "p <&? q"   := (landm p q)    (at level 60, right associativity).
-Notation "p &?> q"   := (randm p q)    (at level 60, right associativity).
-Notation "p <?&> q"  := (mand p q)     (at level 60, right associativity).
-Notation "p <?& q"   := (lmand p q)    (at level 60, right associativity).
-Notation "p ?&> q"   := (rmand p q)    (at level 60, right associativity).
-Notation "p <*> q"   := (app p q)      (at level 60, right associativity).
-Notation "p <+> q"   := (sum p q)      (at level 60, right associativity).
+Notation "p <&> q"   := (and p q)      (at level 50, left associativity).
+Notation "p <&  q"   := (land p q)     (at level 50, left associativity).
+Notation "p  &> q"   := (rand p q)     (at level 50, left associativity).
+Notation "p <&?> q"  := (andm p q)     (at level 50, left associativity).
+Notation "p <&? q"   := (landm p q)    (at level 50, left associativity).
+Notation "p &?> q"   := (randm p q)    (at level 50, left associativity).
+Notation "p <?&> q"  := (mand p q)     (at level 50, left associativity).
+Notation "p <?& q"   := (lmand p q)    (at level 50, left associativity).
+Notation "p ?&> q"   := (rmand p q)    (at level 50, left associativity).
+Notation "p <*> q"   := (app p q)      (at level 50, left associativity).
+Notation "p <+> q"   := (sum p q)      (at level 41, right associativity).
 
 
