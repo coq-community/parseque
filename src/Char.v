@@ -5,6 +5,7 @@ Require Import Sized.
 Require Import NEList.
 
 Require Import Ascii.
+Require Import String.
 Require Import StringAsList.
 
 Require Import Coq.Lists.List.
@@ -35,5 +36,8 @@ Definition parensm (p : Parser Chars ascii M A n) : Parser Chars ascii M A n :=
 
 Definition withSpaces (p : Parser Chars ascii M A n) : Parser Chars ascii M A n :=
   spaces ?&> p <&? spaces.
+
+Definition alpha : Parser Chars ascii M ascii n :=
+  anyOf (fromString "abcdefghijklmnopqrstuvwxyz"%string).
 
 End Char.
