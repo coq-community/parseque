@@ -7,6 +7,8 @@ all:
 	coqc Category.v
 	coqc Success.v
 	coqc Combinators.v
+	coqc StringAsList.v
+	coqc Char.v
 
 clean:
 	rm -f *.vo *.glob

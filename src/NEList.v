@@ -41,3 +41,15 @@ End NEList.
 
 Definition append {A} (xxs : NEList A) (yys : NEList A) : NEList A :=
   foldr cons yys xxs.
+
+Class NonEmpty (A : Type) (l : list A) :=
+  MkNonEmpty { _nonEmpty : NEList A
+             ; _toListeq : toList _nonEmpty = l }.
+
+Arguments NonEmpty {_} _.
+Arguments MkNonEmpty {_} {_}.
+
+Instance consNonEmpty : forall (A : Type) (x : A) (xs : list A), NonEmpty (x :: xs) :=
+  fun A x xs => MkNonEmpty (MkNEList x xs) (eq_refl _).
+
+Definition nonEmpty {A : Type} {l : list A} `{NonEmpty A l} : NEList A := _nonEmpty.
