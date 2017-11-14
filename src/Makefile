@@ -10,6 +10,7 @@ all:
 	coqc StringAsList.v
 	coqc Char.v
 	coqc Numbers.v
+	coqc Running.v
 	coqc Parseque.v
 	coqc Examples.v
 

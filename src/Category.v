@@ -43,10 +43,24 @@ Arguments MkRawAlternative {_} {_} {_}.
 Class RawMonad (F : Type -> Type) `{RawApplicative F} :=
   MkRawMonad { _bind : forall A B, F A -> (A -> F B) -> F B }.
 
-Definition bind {F : Type -> Type} `{RawMonad F} {A B : Type} : F A -> (A -> F B) -> F B :=
-  _bind _ _.
+Definition bind {F : Type -> Type} `{RawMonad F} {A B : Type} :
+  F A -> (A -> F B) -> F B := _bind _ _.
+
+Fixpoint mapM {M : Type -> Type} `{RawMonad M} {A B : Type}
+ (f : A -> M B) (xs : list A) : M (list B) :=
+match xs with
+  | nil        => pure nil
+  | cons x xs' => bind (f x) (fun fx => fmap (cons fx) (mapM f xs'))
+end.
 
 Arguments MkRawMonad {_} {_} {_}.
+
+Class RawMonadRun (F : Type -> Type) `{RawMonad F} :=
+  MkRawMonadRun { _runMonad : forall A, F A -> list A }.
+
+Definition runMonad {F : Type -> Type} `{RawMonadRun F} {A : Type} : F A -> list A := _runMonad _.
+
+Arguments MkRawMonadRun {_} {_} {_} {_}.
 
 Require Import Coq.Lists.List.
 
@@ -62,6 +76,9 @@ Instance listRawAlternative : RawAlternative list :=
 Instance listRawMonad : RawMonad list :=
   MkRawMonad (fun _ _ xs f => flat_map f xs).
 
+Instance listRawMonadRun : RawMonadRun list :=
+  MkRawMonadRun (fun _ x => x).
+
 
 Instance optionRawFunctor : RawFunctor option :=
   MkRawFunctor option_map.
@@ -74,3 +91,6 @@ Instance optionRawAlternative : RawAlternative option :=
 
 Instance optionRawMonad : RawMonad option :=
   MkRawMonad (fun _ _ xs f => option_rect _ f None xs).
+
+Instance optionRawMonadRun : RawMonadRun option :=
+  MkRawMonadRun (fun _ => option_rect _ (fun x => cons x nil) nil).

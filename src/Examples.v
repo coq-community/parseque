@@ -1,9 +1,12 @@
 Require Import Parseque.
+Require Import Running.
 Require Import Ascii.
 
 Section ArithmeticLanguage.
 
-Context {M : Type -> Type} `{RawMonad M} `{RawAlternative M}.
+Context
+  {Toks : nat -> Type} `{Sized Toks ascii}
+  {M : Type -> Type} `{RawMonad M} `{RawAlternative M}.
 
 Inductive Expr : Type :=
   | EEmb : Term -> Expr
@@ -19,9 +22,9 @@ with Factor : Type :=
 .
 
 Record Language (n : nat) : Type := MkLanguage
-  { expr   : Parser SizedString ascii M Expr n
-  ; term   : Parser SizedString ascii M Term n
-  ; factor : Parser SizedString ascii M Factor n
+  { _expr   : Parser Toks ascii M Expr n
+  ; _term   : Parser Toks ascii M Term n
+  ; _factor : Parser Toks ascii M Factor n
   }.
 
 Arguments MkLanguage {_}.
@@ -29,9 +32,24 @@ Arguments MkLanguage {_}.
 Definition language : [ Language ] := Fix Language (fun _ rec =>
   let addop  := EAdd <$ char "+" <|> ESub <$ char "-" in
   let mulop  := TMul <$ char "*" <|> TDiv <$ char "/" in
-  let factor := FEmb <$> parens (Induction.map expr _ rec) <|> FLit <$> decimal_nat in
+  let factor := FEmb <$> parens (Induction.map _expr _ rec) <|> FLit <$> decimal_nat in
   let term   := hchainl (TEmb <$> factor) mulop factor in
   let expr   := hchainl (EEmb <$> term) addop term in
   MkLanguage expr term factor).
 
+Definition expr   : [ Parser Toks ascii M Expr   ] := fun n => _expr n (language n).
+Definition term   : [ Parser Toks ascii M Term   ] := fun n => _term n (language n).
+Definition factor : [ Parser Toks ascii M Factor ] := fun n => _factor n (language n).
+
 End ArithmeticLanguage.
+
+Local Open Scope string_scope.
+
+Definition test1 : check "1+1" expr := MkSingleton
+  (EAdd (EEmb (TEmb (FLit 1)))
+              (TEmb (FLit 1))).
+
+Definition test2 : check "1+(2*31-4)" expr := MkSingleton
+ (EAdd (EEmb (TEmb (FLit 1)))
+             (TEmb (FEmb (ESub (EEmb (TMul (TEmb (FLit 2)) (FLit 31)))
+                                           (TEmb (FLit 4)))))).

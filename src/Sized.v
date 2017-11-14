@@ -24,29 +24,37 @@ Instance sizedVector {A : Type} : Sized (Vector.t A) A :=
     | S n' => fun v => Some (hd v, tl v)
   end).
 
-Require Import Ascii.
-Require Import String.
-
 Record SizedType {A : Type} (size : A -> nat) (n : nat) : Type :=
   MkSizedType { value : A
-           ; sized : size value = n
-           }.
+              ; sized : size value = n
+              }.
 
 Arguments MkSizedType {_} {_} {_}.
 
-Definition SizedString n := SizedType length n.
+Require Import Coq.Lists.List.
+Import ListNotations.
 
-Definition mkString (str : string) : SizedString (length str) := MkSizedType str (eq_refl _).
+Definition SizedList (A : Type) n := SizedType (@length A) n.
 
-Definition stringUncons {n} (Str : SizedString (S n)) : ascii * SizedString n :=
-  let (str, prf) := Str in
-  (match str return length str = S n -> ascii * SizedString n with
-   | EmptyString => fun hf  => False_rect _ (Nat.neq_0_succ _ hf)
-   | String c s' => fun Seq => pair c (MkSizedType s' (Nat.succ_inj _ _ Seq))
+Section SizedList.
+
+Context {A : Type}.
+
+Definition mkSizedList (xs : list A) : SizedList A (length xs) :=
+  MkSizedType xs (eq_refl _).
+
+Definition listUncons {n : nat} (xs : SizedList A (S n)) : A * SizedList A n :=
+  let (vs, prf) := xs in
+  (match vs return length vs = S n -> A * SizedList A n with
+   | []       => fun hf  => False_rect _ (Nat.neq_0_succ _ hf)
+   | v :: vs' => fun Seq => pair v (MkSizedType vs' (Nat.succ_inj _ _ Seq))
   end) prf.
 
-Instance sizedString : Sized SizedString ascii := MkSized (fun n =>
-match n return SizedString n -> option (View _ _ n) with
+End SizedList.
+
+Instance sizedList : forall (A : Type), Sized (SizedList A) A :=
+fun A => MkSized (fun n =>
+match n return SizedList A n -> option (View _ _ n) with
  | O    => fun _   => None
- | S n' => fun str => Some (stringUncons str)
+ | S n' => fun str => Some (listUncons str)
 end).
