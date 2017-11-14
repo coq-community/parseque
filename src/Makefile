@@ -9,6 +9,7 @@ all:
 	coqc Combinators.v
 	coqc StringAsList.v
 	coqc Char.v
+	coqc Numbers.v
 
 clean:
 	rm -f *.vo *.glob
