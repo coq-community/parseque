@@ -229,8 +229,9 @@ Definition chainl1 (p : Parser Toks Tok M A n)
   (op : Box (Parser Toks Tok M (A -> A -> A)) n) : Parser Toks Tok M A n :=
   hchainl p op p.
 
-Definition nelist (p : Parser Toks Tok M A n) : Parser Toks Tok M (NEList A) n :=
-  iterater (map cons p) (map singleton p).
+Definition nelist : Parser Toks Tok M A n -> Parser Toks Tok M (NEList A) n :=
+  Fix _ (fun _ rec p => map (prod_curry consm)
+        (andmbind p (fun _ => Induction.app _ rec p))) _.
 
 End Chains.
 

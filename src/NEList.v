@@ -26,6 +26,9 @@ Definition map (f : A -> B) (xxs : NEList A) : NEList B :=
 Definition cons (hd : A) (tl : NEList A) : NEList A := MkNEList hd (toList tl).
 Definition singleton (x : A) : NEList A := MkNEList x nil.
 
+Definition consm (hd : A) (tl : option (NEList A)) : NEList A :=
+  option_rect _ (cons hd) (singleton hd) tl.
+
 Definition foldl (c : B -> A -> B) (xxs : NEList A) (n : B) : B := List.fold_left c (toList xxs) n.
 Definition foldr (c : A -> B -> B) (n : B) (xxs : NEList A) : B := List.fold_right c n (toList xxs).
 
