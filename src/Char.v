@@ -12,31 +12,28 @@ Import ListNotations.
 
 Section Char.
 
-Context {M : Type -> Type} {Chars : nat -> Type} {A : Type} {n : nat}.
+Context
+  {Chars : nat -> Type} `{Sized Chars ascii}
+  {M : Type -> Type} `{RawFunctor M} `{RawApplicative M} `{RawMonad M} `{RawAlternative M}
+  {A : Type} {n : nat}.
 
-Definition char `{RawAlternative M} `{RawMonad M} `{Sized Chars ascii}
-  (c : ascii) : Parser Chars ascii M ascii n := exact c.
+Definition char (c : ascii) : Parser Chars ascii M ascii n := exact c.
 
-Definition space `{RawAlternative M} `{RawMonad M} `{Sized Chars ascii}
-  : Parser Chars ascii M ascii n := anyOf (" " :: "009" :: "013" :: [])%char.
+Definition space : Parser Chars ascii M ascii n :=
+  anyOf (" " :: "009" :: "013" :: [])%char.
 
-Definition spaces `{RawAlternative M} `{RawMonad M} `{Sized Chars ascii}
-  : Parser Chars ascii M (NEList ascii) n := nelist space.
+Definition spaces : Parser Chars ascii M (NEList ascii) n := nelist space.
 
-Definition text `{RawAlternative M} `{RawMonad M} `{Sized Chars ascii}
-  (t : String) `{NonEmpty ascii t} : Parser Chars ascii M String n :=
+Definition text (t : String) `{NonEmpty ascii t} : Parser Chars ascii M String n :=
   Combinators.map NEList.toList (exacts nonEmpty).
 
-Definition parens `{RawMonad M} `{RawAlternative M} `{Sized Chars ascii}
-  (p : Box (Parser Chars ascii M A) n) : Parser Chars ascii M A n :=
+Definition parens (p : Box (Parser Chars ascii M A) n) : Parser Chars ascii M A n :=
   between (char "(") (char ")") p.
 
-Definition parensm `{RawMonad M} `{RawAlternative M} `{Sized Chars ascii}
-  (p : Parser Chars ascii M A n) : Parser Chars ascii M A n :=
+Definition parensm (p : Parser Chars ascii M A n) : Parser Chars ascii M A n :=
   betweenm (char "(") (char ")") p.
 
-Definition withSpaces `{RawMonad M} `{RawAlternative M} `{Sized Chars ascii}
-  (p : Parser Chars ascii M A n) : Parser Chars ascii M A n :=
+Definition withSpaces (p : Parser Chars ascii M A n) : Parser Chars ascii M A n :=
   spaces ?&> p <&? spaces.
 
 End Char.
