@@ -82,7 +82,7 @@ Definition andbind (p : Parser Toks Tok M A n)
   (q : A -> Box (Parser Toks Tok M B) n) : Parser Toks Tok M (A * B) n :=
   MkParser (fun _ mlen ts => bind (runParser p mlen ts) (fun sa =>
   let salen  := lt_le_trans _ _ _ (small sa) mlen in
-  let adjust := fun sb => Success.map (pair (value sa)) (Success.lt_lift (small sa) sb) in
+  let adjust := Success.and sa in
   fmap adjust (runParser (call (q (value sa)) salen) (le_refl _) (leftovers sa)))).
 
 Definition and (p : Parser Toks Tok M A n) (q : Box (Parser Toks Tok M B) n) :

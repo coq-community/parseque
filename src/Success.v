@@ -35,10 +35,6 @@ Definition le_lift {m n : nat} (p : m <= n) (s : Success Toks Tok A m) :
 Definition lt_lift {m n : nat} (p : m < n) (s : Success Toks Tok A m) :
   Success Toks Tok A n := le_lift (Nat.lt_le_incl _ _ p) s.
 
-Definition and (p : Success Toks Tok A n) (q : Success Toks Tok B (size p)) :
-  Success Toks Tok (A * B) n :=
-  MkSuccess (value p, value q) (lt_trans _ _ _ (small q) (small p)) (leftovers q).
-
 Definition fromView : View Toks Tok n -> Success Toks Tok Tok n :=
 match n return View Toks Tok n -> Success Toks Tok Tok n with
   | O    => False_rect _
@@ -47,5 +43,17 @@ end.
 
 End Success.
 
-Definition getTok {Toks} {Tok} `{Sized Toks Tok} {n} : Toks n -> option (Success Toks Tok Tok n) :=
-  fun ts => option_map fromView (uncons ts).
+Section Success2.
+
+Context
+  {Toks : nat -> Type} {Tok : Type} `{Sized Toks Tok}
+  {A B : Type} {n : nat}.
+
+Definition and (p : Success Toks Tok A n) (q : Success Toks Tok B (size p)) :
+  Success Toks Tok (A * B) n :=
+  lt_lift (small p) (map (fun v => (value p, v)) q).
+
+Definition getTok (ts : Toks n) : option (Success Toks Tok Tok n) :=
+  option_map fromView (uncons ts).
+
+End Success2.
