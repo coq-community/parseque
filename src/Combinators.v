@@ -100,11 +100,12 @@ Context
   {M : Type -> Type} `{RawFunctor M} `{RawApplicative M} `{RawMonad M} `{RawAlternative M}
   {A B : Type} {n : nat}.
 
+Definition ands (ps : NEList (Parser Toks Tok M A n)) : Parser Toks Tok M (NEList A) n :=
+  foldr1 (fun p ps => map (prod_curry append) (and p ps)) (NEList.map (map singleton) ps).
+
 Definition mand (p : Parser Toks Tok M A n) (q : Parser Toks Tok M B n) :
   Parser Toks Tok M (option A * B) n :=
-  MkParser (fun _ mlen ts => Category.alt
-    (runParser (map (fun v => (Some (fst v), snd v)) (and p q)) mlen ts)
-    (runParser (map (fun v => (None , v)) q) mlen ts)).
+  alt (map (fun v => (Some (fst v), snd v)) (and p q)) (map (fun v => (None, v)) q).
 
 Definition optionTok (f : Tok -> option A) : Parser Toks Tok M A n :=
   guardM f anyTok.
@@ -148,7 +149,7 @@ Context
 
 Definition app (p : Parser Toks Tok M (A -> B) n)
   (q : Box (Parser Toks Tok M A) n) : Parser Toks Tok M B n :=
-  bind p (fun f => Induction.map (fun _ => map (fun t => f t)) _ q).
+  bind p (fun f => Induction.map (fun _ => map f) _ q).
 
 Definition exact (t : Tok) : Parser Toks Tok M Tok n :=
   guardM (fun t' => if eq_dec t t' then Some t else None) anyTok.
@@ -157,8 +158,7 @@ Definition anyOf (ts : list Tok) : Parser Toks Tok M Tok n :=
   alts (List.map exact ts).
 
 Definition exacts (ts : NEList Tok) : Parser Toks Tok M (NEList Tok) n :=
-  foldr1 (fun xs ys => map (prod_curry append) (and xs ys))
-         (NEList.map (fun t => map singleton (exact t)) ts).
+  ands (NEList.map exact ts).
 
 Definition between (open : Parser Toks Tok M A n) (close : Box (Parser Toks Tok M C) n)
   (p : Box (Parser Toks Tok M B) n) : Parser Toks Tok M B n :=
