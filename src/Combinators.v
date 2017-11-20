@@ -230,8 +230,7 @@ Definition chainl1 (p : Parser Toks Tok M A n)
   hchainl p op p.
 
 Definition nelist : Parser Toks Tok M A n -> Parser Toks Tok M (NEList A) n :=
-  Fix _ (fun _ rec p => map (prod_curry consm)
-        (andmbind p (fun _ => Induction.app _ rec p))) _.
+  Fix _ (fun _ rec p => map (prod_curry consm) (andm p (Induction.app _ rec p))) _.
 
 End Chains.
 
