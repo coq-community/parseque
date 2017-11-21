@@ -2,7 +2,6 @@ Require Import Category.
 Require Import Sized.
 Require Import Combinators.
 Require Import NEList.
-Require Import Char.
 
 Require Import Ascii.
 Local Open Scope char.

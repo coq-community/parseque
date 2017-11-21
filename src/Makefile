@@ -8,8 +8,8 @@ all:
 	coqc Success.v
 	coqc Combinators.v
 	coqc StringAsList.v
-	coqc Char.v
 	coqc Numbers.v
+	coqc Char.v
 	coqc Running.v
 	coqc Parseque.v
 	coqc Examples.v

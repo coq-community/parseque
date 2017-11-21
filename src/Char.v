@@ -3,6 +3,7 @@ Require Import Induction.
 Require Import Combinators.
 Require Import Sized.
 Require Import NEList.
+Require Import Numbers.
 
 Require Import Ascii.
 Require Import String.
@@ -39,5 +40,10 @@ Definition withSpaces (p : Parser Chars ascii M A n) : Parser Chars ascii M A n 
 
 Definition alpha : Parser Chars ascii M ascii n :=
   anyOf (fromString "abcdefghijklmnopqrstuvwxyz"%string).
+
+Definition num : Parser Chars ascii M nat n := decimal_digit.
+
+Definition alphanum : Parser Chars ascii M (ascii + nat) n :=
+  sum alpha num.
 
 End Char.
