@@ -1,5 +1,6 @@
 From parseque Require Import Running Parseque.
 Require Import Ascii.
+Require Import String.
 
 Section ArithmeticLanguage.
 
