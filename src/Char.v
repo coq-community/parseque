@@ -1,8 +1,9 @@
-From parseque Require Import Category Induction Combinators Sized NEList Numbers StringAsList.
+From parseque Require Import Category Induction Combinators Sized NEList Numbers.
 
 Require Import Ascii.
 Require Import String.
 
+From parseque Require Import StringAsList.
 Require Import Coq.Lists.List.
 Import ListNotations.
 
