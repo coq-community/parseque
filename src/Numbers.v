@@ -1,7 +1,4 @@
-Require Import Category.
-Require Import Sized.
-Require Import Combinators.
-Require Import NEList.
+From parseque Require Import Category Sized NEList Combinators.
 
 Require Import Ascii.
 Local Open Scope char.
