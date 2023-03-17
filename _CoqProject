@@ -1,0 +1,16 @@
+-Q src parseque
+
+src/Category.v
+src/Char.v
+src/Combinators.v
+src/EqDec.v
+src/Examples.v
+src/Indexed.v
+src/Induction.v
+src/NEList.v
+src/Numbers.v
+src/Parseque.v
+src/Running.v
+src/Sized.v
+src/StringAsList.v
+src/Success.v

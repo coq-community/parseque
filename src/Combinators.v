@@ -1,12 +1,8 @@
 Require Import Coq.Arith.Le.
 Require Import Coq.Arith.Lt.
 Require Import Coq.Arith.PeanoNat.
-Require Import Induction.
-Require Import Sized.
-Require Import Success.
-Require Import EqDec.
-Require Import NEList.
-Require Import Category.
+
+From parseque Require Import Category Induction Sized NEList Success EqDec.
 
 Record Parser (Toks : nat -> Type) (Tok : Type)
               (M : Type -> Type) (A : Type) (n : nat) : Type :=

@@ -1,10 +1,7 @@
-Require Import Category.
-Require Import Indexed.
-Require Import Sized.
-Require Import Success.
-Require Import Combinators.
+From parseque Require Import Category Combinators Sized Numbers Indexed StringAsList Success.
+
 Require Import String.
-Require Import StringAsList.
+
 Require Import Ascii.
 
 Require Import Coq.Arith.Le.

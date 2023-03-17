@@ -1,5 +1,4 @@
-Require Import Indexed.
-Require Import Sized.
+From parseque Require Import Indexed Sized.
 Require Import Coq.Arith.Le.
 Require Import Coq.Arith.Lt.
 Require Import PeanoNat.
