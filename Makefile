@@ -1,14 +1,14 @@
-all: Makefile.coq compile install
+all: compile install
 
 Makefile.coq:
 	coq_makefile -f _CoqProject -o Makefile.coq
 
-compile:
-	make -f Makefile.coq all
+compile: Makefile.coq
+	make -f Makefile.coq
 
-install:
+install: Makefile.coq
 	make -f Makefile.coq install
 
-clean:
+clean: Makefile.coq
 	make -f Makefile.coq clean
 	rm -f Makefile.coq Makefile.coq.conf
