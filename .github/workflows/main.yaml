@@ -1,0 +1,33 @@
+name: Docker-Coq CI
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - "**"  # forall submitted Pull Requests
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        coq_version:
+          - '8.9'
+          - '8.10'
+          - '8.11'
+          - '8.12'
+          - '8.13'
+          - '8.14'
+          - '8.15'
+          - '8.16'
+        ocaml_version: ['default']
+      fail-fast: false  # don't stop jobs if one fails
+    steps:
+      - uses: actions/checkout@v3
+      - uses: coq-community/docker-coq-action@v1
+        with:
+          opam_file: 'parseque.opam'
+          coq_version: ${{ matrix.coq_version }}
+          ocaml_version: ${{ matrix.ocaml_version }}
