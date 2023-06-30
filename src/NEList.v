@@ -52,6 +52,7 @@ Class NonEmpty (A : Type) (l : list A) :=
 Arguments NonEmpty {_} _.
 Arguments MkNonEmpty {_} {_}.
 
+#[global]
 Instance consNonEmpty : forall (A : Type) (x : A) (xs : list A), NonEmpty (x :: xs) :=
   fun A x xs => MkNonEmpty (MkNEList x xs) (eq_refl _).
 

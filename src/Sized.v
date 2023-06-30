@@ -18,6 +18,7 @@ end.
 
 Require Import Vector.
 
+#[global]
 Instance sizedVector {A : Type} : Sized (Vector.t A) A :=
   MkSized (fun n => match n return Vector.t A n -> option (View (Vector.t A) A n) with
     | O    => fun _ => None
@@ -52,6 +53,7 @@ Definition listUncons {n : nat} (xs : SizedList A (S n)) : A * SizedList A n :=
 
 End SizedList.
 
+#[global]
 Instance sizedList : forall (A : Type), Sized (SizedList A) A :=
 fun A => MkSized (fun n =>
 match n return SizedList A n -> option (View _ _ n) with
