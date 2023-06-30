@@ -64,33 +64,43 @@ Arguments MkRawMonadRun {_} {_} {_} {_}.
 
 Require Import Coq.Lists.List.
 
+#[global]
 Instance listRawFunctor : RawFunctor list :=
   MkRawFunctor map.
 
+#[global]
 Instance listRawApplicative : RawApplicative list :=
   MkRawApplicative (fun _ x => cons x nil) (fun _ _ fs xs => flat_map (fun f => map f xs) fs).
 
+#[global]
 Instance listRawAlternative : RawAlternative list :=
   MkRawAlternative (@nil) (fun _ xs ys => xs ++ ys).
 
+#[global]
 Instance listRawMonad : RawMonad list :=
   MkRawMonad (fun _ _ xs f => flat_map f xs).
 
+#[global]
 Instance listRawMonadRun : RawMonadRun list :=
   MkRawMonadRun (fun _ x => x).
 
 
+#[global]
 Instance optionRawFunctor : RawFunctor option :=
   MkRawFunctor option_map.
 
+#[global]
 Instance optionRawApplicative : RawApplicative option :=
   MkRawApplicative (fun _ => Some) (fun A B => option_rect _ (option_map (B := B)) (fun _ => None)).
 
+#[global]
 Instance optionRawAlternative : RawAlternative option :=
   MkRawAlternative (@None) (fun _ => option_rect _ (fun x _ => Some x) (fun x => x)).
 
+#[global]
 Instance optionRawMonad : RawMonad option :=
   MkRawMonad (fun _ _ xs f => option_rect _ f None xs).
 
+#[global]
 Instance optionRawMonadRun : RawMonadRun option :=
   MkRawMonadRun (fun _ => option_rect _ (fun x => cons x nil) nil).

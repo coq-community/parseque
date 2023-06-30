@@ -22,6 +22,7 @@ Arguments MkTokenizer {_}.
 Definition fromText {A : Type} `{Tokenizer A} (s : string) : list A :=
   tokenize (fromString s).
 
+#[global]
 Instance tokAscii : Tokenizer ascii := MkTokenizer (fun x => x).
 
 Section Check.
