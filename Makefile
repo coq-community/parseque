@@ -1,4 +1,4 @@
-all: compile install
+all: compile
 
 Makefile.coq:
 	coq_makefile -f _CoqProject -o Makefile.coq
