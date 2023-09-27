@@ -19,7 +19,7 @@ Context
   {A : Type} {m n : nat}.
 
 Definition le_lower (mlen : m <= n) (p : Parser Toks Tok M A n) : Parser Toks Tok M A m :=
-  MkParser (fun _ plem => runParser p (le_trans _ _ _ plem mlen)).
+  MkParser (fun _ plem => runParser p (Nat.le_trans _ _ _ plem mlen)).
 
 Definition lt_lower (mltn : m < n) (p : Parser Toks Tok M A n) : Parser Toks Tok M A m :=
   le_lower (Nat.lt_le_incl _ _ mltn) p.
@@ -66,9 +66,9 @@ Definition alts (ps : list (Parser Toks Tok M A n)) : Parser Toks Tok M A n :=
 Definition andmbind (p : Parser Toks Tok M A n)
   (q : A -> Box (Parser Toks Tok M B) n) : Parser Toks Tok M (A * option B) n :=
   MkParser (fun _ mlen ts => bind (runParser p mlen ts) (fun sa =>
-  let salen   := lt_le_trans _ _ _ (small sa) mlen in
+  let salen   := Nat.le_trans _ _ _ (small sa) mlen in
   let combine := fun sb => Success.map (fun p => (fst p, Some (snd p))) (Success.and sa sb) in
-  Category.alt (fmap combine (runParser (call (q (value sa)) salen) (le_refl _) (leftovers sa)))
+  Category.alt (fmap combine (runParser (call (q (value sa)) salen) (Nat.le_refl _) (leftovers sa)))
                (pure (Success.map (fun a => (a , None)) sa)))).
 
 (* This could be implemented in terms of andmbind + guardM but for
@@ -77,9 +77,9 @@ Definition andmbind (p : Parser Toks Tok M A n)
 Definition andbind (p : Parser Toks Tok M A n)
   (q : A -> Box (Parser Toks Tok M B) n) : Parser Toks Tok M (A * B) n :=
   MkParser (fun _ mlen ts => bind (runParser p mlen ts) (fun sa =>
-  let salen  := lt_le_trans _ _ _ (small sa) mlen in
+  let salen  := Nat.le_trans _ _ _ (small sa) mlen in
   let adjust := Success.and sa in
-  fmap adjust (runParser (call (q (value sa)) salen) (le_refl _) (leftovers sa)))).
+  fmap adjust (runParser (call (q (value sa)) salen) (Nat.le_refl _) (leftovers sa)))).
 
 Definition and (p : Parser Toks Tok M A n) (q : Box (Parser Toks Tok M B) n) :
   Parser Toks Tok M (A * B) n := andbind p (fun _ => q).
@@ -97,7 +97,7 @@ Context
   {A B : Type} {n : nat}.
 
 Definition ands (ps : NEList (Parser Toks Tok M A n)) : Parser Toks Tok M (NEList A) n :=
-  foldr1 (fun p ps => map (prod_curry append) (and p ps)) (NEList.map (map singleton) ps).
+  foldr1 (fun p ps => map (uncurry append) (and p ps)) (NEList.map (map singleton) ps).
 
 Definition mand (p : Parser Toks Tok M A n) (q : Parser Toks Tok M B n) :
   Parser Toks Tok M (option A * B) n :=
@@ -176,7 +176,7 @@ Definition LChain (n : nat) : Type :=
   Success Toks Tok A n -> Box (Parser Toks Tok M (A -> A)) n -> M (Success Toks Tok A n).
 
 Definition schainl_aux (n : nat) (rec : Box LChain n) : LChain n := fun sa op =>
-  Category.bind (runParser (call op (small sa)) (le_refl _) (leftovers sa)) (fun sop =>
+  Category.bind (runParser (call op (small sa)) (Nat.le_refl _) (leftovers sa)) (fun sop =>
   let sa' := Success.map (fun f => f (value sa)) sop in
   Category.bind (call rec (small sa) sa' (Induction.lt_lower (small sa) op)) (fun res =>
   pure (lt_lift (small sa) res))).
@@ -195,10 +195,10 @@ Definition RChain (n : nat) : Type :=
 Definition iterater_aux (n : nat) (rec : Box RChain n) :
   RChain n := fun op val => MkParser (fun _ mlen ts =>
   Category.bind (runParser op mlen ts) (fun sop =>
-  let sopltn := lt_le_trans _ _ _ (small sop) mlen in
+  let sopltn := Nat.le_trans _ _ _ (small sop) mlen in
   let op'    := lt_lower sopltn op in
   let val'   := lt_lower sopltn val in
-  Category.bind (runParser (call rec sopltn op' val') (le_refl _) (leftovers sop)) (fun res =>
+  Category.bind (runParser (call rec sopltn op' val') (Nat.le_refl _) (leftovers sop)) (fun res =>
   pure (lt_lift (small sop) (Success.map (value sop) res))))).
 
 Definition iterater {n : nat} (op : Parser Toks Tok M (A -> A) n)
@@ -226,7 +226,7 @@ Definition chainl1 (p : Parser Toks Tok M A n)
   hchainl p op p.
 
 Definition nelist : Parser Toks Tok M A n -> Parser Toks Tok M (NEList A) n :=
-  Fix _ (fun _ rec p => map (prod_curry consm) (andm p (Induction.app _ rec p))) _.
+  Fix _ (fun _ rec p => map (uncurry consm) (andm p (Induction.app _ rec p))) _.
 
 End Chains.
 

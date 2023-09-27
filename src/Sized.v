@@ -13,7 +13,7 @@ Arguments MkSized {_} {_}.
 Definition view {As A B} (f : forall n, A -> As n -> B (S n)) {n : nat} : View As A n -> B n :=
 match n return View As A n -> B n with
   | O    => fun hf => False_rect _ hf
-  | S n' => fun vw => prod_curry (f _) vw
+  | S n' => fun vw => uncurry (f _) vw
 end.
 
 Require Import Vector.

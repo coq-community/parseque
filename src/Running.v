@@ -36,7 +36,7 @@ Definition check : string -> [ Parser (SizedList Tok) Tok M A ] -> Type := fun s
   let tokens := (fromText s : list Tok) in
   let n      := List.length tokens in
   let input  := mkSizedList tokens in
-  let result := runParser (p n) (le_refl n) input in
+  let result := runParser (p n) (Nat.le_refl n) input in
   let valid  := fun s => match Success.size s with | O => Some (Success.value s) | _ => None end in
   match mapM valid (runMonad result) with
     | Some (cons hd _) => @Singleton A hd

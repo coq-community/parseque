@@ -28,7 +28,7 @@ Definition guardM (f : A -> option B) : Success Toks Tok A n -> option (Success 
 
 Definition le_lift {m n : nat} (p : m <= n) (s : Success Toks Tok A m) :
   Success Toks Tok A n :=
-  let small := le_trans _ _ _  (small s) p
+  let small := Nat.le_trans _ _ _  (small s) p
   in MkSuccess (value s) small (leftovers s).
 
 Definition lt_lift {m n : nat} (p : m < n) (s : Success Toks Tok A m) :
@@ -37,7 +37,7 @@ Definition lt_lift {m n : nat} (p : m < n) (s : Success Toks Tok A m) :
 Definition fromView : View Toks Tok n -> Success Toks Tok Tok n :=
 match n return View Toks Tok n -> Success Toks Tok Tok n with
   | O    => False_rect _
-  | S n' => prod_curry (fun t ts => MkSuccess t (le_refl _) ts)
+  | S n' => uncurry (fun t ts => MkSuccess t (Nat.le_refl _) ts)
 end.
 
 End Success.

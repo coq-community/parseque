@@ -13,7 +13,7 @@ install: [
 ]
 depends: [
   "ocaml"
-  "coq" {>= "8.9" & < "8.18"}
+  "coq" {>= "8.16" & < "8.19"}
 ]
 
 synopsis: "Total parser combinators in Coq"

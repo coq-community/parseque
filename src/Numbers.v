@@ -34,7 +34,7 @@ Definition decimal_nat : Parser Chars ascii M nat n :=
 
 Definition decimal_int : Parser Chars ascii M Z n :=
   let convert s v := option_rect _ (fun _ => Z.opp) (fun x => x) s (Z.of_nat v)
-  in Combinators.map (prod_curry convert) (exact "-" <?&> decimal_nat).
+  in Combinators.map (uncurry convert) (exact "-" <?&> decimal_nat).
 
 End Numbers.
 
