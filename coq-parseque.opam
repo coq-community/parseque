@@ -12,7 +12,7 @@ license: "MIT"
 
 synopsis: "Total parser combinators in Coq"
 description: """
-Port of agdarsec to Coq"""
+Port of the agdarsec total parser combinator library to Coq."""
 
 build: [make "-j%{jobs}%"]
 install: [make "install"]
