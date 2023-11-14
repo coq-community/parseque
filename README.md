@@ -23,7 +23,7 @@ Follow the instructions on https://github.com/coq-community/templates to regener
 
 
 
-Port of agdarsec to Coq
+Port of the agdarsec total parser combinator library to Coq.
 
 ## Meta
 
@@ -35,7 +35,8 @@ Port of agdarsec to Coq
 - Compatible Coq versions: 8.16 or later
 - Additional dependencies: none
 - Coq namespace: `parseque`
-- Related publication(s): none
+- Related publication(s):
+  - [agdarsec - Total Parser Combinators](https://gallais.github.io/pdf/agdarsec18.pdf) 
 
 ## Building and installation instructions
 

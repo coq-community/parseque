@@ -8,7 +8,11 @@ action: true
 synopsis: Total parser combinators in Coq
 
 description: |-
-  Port of agdarsec to Coq
+  Port of the agdarsec total parser combinator library to Coq.
+
+publications:
+- pub_url: https://gallais.github.io/pdf/agdarsec18.pdf
+  pub_title: agdarsec - Total Parser Combinators
 
 authors:
 - name: G. Allais
