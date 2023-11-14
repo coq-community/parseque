@@ -1,0 +1,47 @@
+---
+fullname: Parseque
+shortname: parseque
+organization: coq-community
+community: true
+action: true
+
+synopsis: Total parser combinators in Coq
+
+description: |-
+  Port of agdarsec to Coq
+
+authors:
+- name: G. Allais
+  initial: true
+
+maintainers:
+- name: Wolfgang Meier
+  nickname: womeier
+
+opam-file-maintainer: palmskog@gmail.com
+
+opam-file-version: dev
+
+license:
+  fullname: MIT License
+  identifier: MIT
+
+supported_coq_versions:
+  text: 8.16 or later
+  opam: '{>= "8.16"}'
+
+tested_coq_opam_versions:
+- version: 'dev'
+- version: '8.18'
+- version: '8.17'
+- version: '8.16'
+
+namespace: parseque
+
+keywords:
+- name: parsing
+- name: combinators
+
+categories:
+- name: Computer Science/Data Types and Data Structures
+---
