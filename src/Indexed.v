@@ -20,7 +20,7 @@ Definition ICompose (T : Type -> Type) : I -> Type :=
   fun i => T (A i).
 
 Definition IForall : Type :=
-  forall {i}, A i.
+  forall i, A i.
 
 End Indexed.
 

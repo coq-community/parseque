@@ -29,7 +29,7 @@ Definition extract (v : [ Box A ]) : [ A ] :=
 Definition duplicate : [ Box A :-> Box (Box A) ] :=
   fun n v => MkBox (fun m mltn =>
              MkBox (fun p pltm =>
-  let mltp := lt_trans _ _ _ pltm mltn
+  let mltp := Nat.lt_trans _ _ _ pltm mltn
   in call v mltp)).
 
 Definition FixBox (alg : [ Box A :-> A ]) : [ Box A ] :=
@@ -48,7 +48,7 @@ Definition le_lower {m n : nat} (mlen : m <= n) (b : Box A n) : Box A m :=
   MkBox (fun p pltm => call b (Nat.le_trans _ _ _ pltm mlen)).
 
 Definition lt_lower {m n : nat} (mltn : m < n) (b : Box A n) : Box A m :=
-  MkBox (fun p pltm => call b (lt_trans _ _ _ pltm mltn)).
+  MkBox (fun p pltm => call b (Nat.lt_trans _ _ _ pltm mltn)).
 
 End Induction.
 

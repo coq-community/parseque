@@ -12,5 +12,5 @@ match s with
  | String.String c s' => c :: fromString s'
 end.
 
-Fixpoint toString (s : String) : string :=
+Definition toString (s : String) : string :=
   fold_right String.String String.EmptyString s.
