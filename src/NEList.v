@@ -1,4 +1,4 @@
-Require Import Coq.Lists.List.
+From Coq Require Import List.
 
 Record NEList (A : Type) : Type :=
   MkNEList { head : A

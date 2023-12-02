@@ -1,12 +1,9 @@
 From parseque Require Import Category Sized NEList Combinators.
-
-Require Import Ascii.
+From Coq Require Import Ascii.
 Local Open Scope char.
-
-Require Import Coq.Lists.List.
+From Coq Require Import List.
 Import ListNotations.
-
-Require Import BinInt.
+From Coq Require Import BinInt.
 
 Section Numbers.
 

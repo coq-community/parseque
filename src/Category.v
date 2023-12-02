@@ -62,7 +62,7 @@ Definition runMonad {F : Type -> Type} `{RawMonadRun F} {A : Type} : F A -> list
 
 Arguments MkRawMonadRun {_} {_} {_} {_}.
 
-Require Import Coq.Lists.List.
+From Coq Require Import List.
 
 #[global]
 Instance listRawFunctor : RawFunctor list :=

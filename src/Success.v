@@ -1,7 +1,5 @@
 From parseque Require Import Indexed Sized.
-Require Import Coq.Arith.Le.
-Require Import Coq.Arith.Lt.
-Require Import PeanoNat.
+From Coq Require Import PeanoNat.
 
 Record Success (Toks : nat -> Type) (Tok : Type) (A : Type) (n : nat) :=
   MkSuccess { value     : A
