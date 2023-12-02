@@ -48,4 +48,13 @@ keywords:
 
 categories:
 - name: Computer Science/Data Types and Data Structures
+
+documentation: |-
+  ## Documentation
+
+  This Coq library is a port of the [agdarsec](https://github.com/gallais/agdarsec)
+  library for Agda. The core design of agdarsec is described in
+  [this paper](https://gallais.github.io/pdf/agdarsec18.pdf), while
+  [this blog post](https://gallais.github.io/blog/instrumenting-agdarsec)
+  describes instrumentation.
 ---
