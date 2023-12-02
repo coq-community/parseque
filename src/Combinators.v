@@ -1,7 +1,4 @@
-Require Import Coq.Arith.Le.
-Require Import Coq.Arith.Lt.
-Require Import Coq.Arith.PeanoNat.
-
+From Coq Require Import PeanoNat.
 From parseque Require Import Category Induction Sized NEList Success EqDec.
 
 Record Parser (Toks : nat -> Type) (Tok : Type)

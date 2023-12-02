@@ -1,7 +1,4 @@
-Require Import Ascii.
-Require Import String.
-
-Require Import Coq.Lists.List.
+From Coq Require Import Ascii String List.
 Import ListNotations.
 
 Definition String := list ascii.

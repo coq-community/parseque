@@ -1,8 +1,5 @@
 From parseque Require Import Indexed.
-Require Import Coq.Arith.Lt.
-Require Import Coq.Arith.Le.
-Require Import PeanoNat.
-
+From Coq Require Import PeanoNat.
 
 Record Box (A : nat -> Type) (n : nat) : Type :=
   MkBox { call : forall m, m < n -> A m }.
