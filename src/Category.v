@@ -23,13 +23,13 @@ Arguments MkRawApplicative {_} {_}.
 
 Class RawAlternative (F : Type -> Type) `{RawApplicative F} :=
   MkRawAlternative { _fail : forall A, F A
-                   ; _alt  : forall A, F A -> F A -> F A
+                   ; _alt  : forall A, F A -> (unit -> F A) -> F A
                    }.
 
 Definition fail {F : Type -> Type} `{RawAlternative F} {A : Type} : F A :=
   _fail _.
 
-Definition alt {F : Type -> Type} `{RawAlternative F} {A : Type} : F A -> F A -> F A :=
+Definition alt {F : Type -> Type} `{RawAlternative F} {A : Type} : F A -> (unit -> F A) -> F A :=
   _alt _.
 
 Definition fromOption {F : Type -> Type} `{RawAlternative F} {A : Type} (v : option A) : F A :=
@@ -74,7 +74,7 @@ Instance listRawApplicative : RawApplicative list :=
 
 #[global]
 Instance listRawAlternative : RawAlternative list :=
-  MkRawAlternative (@nil) (fun _ xs ys => xs ++ ys).
+  MkRawAlternative (@nil) (fun _ xs ys => xs ++ (ys tt)).
 
 #[global]
 Instance listRawMonad : RawMonad list :=
@@ -95,7 +95,7 @@ Instance optionRawApplicative : RawApplicative option :=
 
 #[global]
 Instance optionRawAlternative : RawAlternative option :=
-  MkRawAlternative (@None) (fun _ => option_rect _ (fun x _ => Some x) (fun x => x)).
+  MkRawAlternative (@None) (fun _ => option_rect _ (fun x _ => Some x) (fun x => (x tt))).
 
 #[global]
 Instance optionRawMonad : RawMonad option :=
