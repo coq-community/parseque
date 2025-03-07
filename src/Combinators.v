@@ -55,7 +55,7 @@ Definition fail : Parser Toks Tok M A n := MkParser (fun _ _ _ => fail).
 
 Definition alt (p q : Parser Toks Tok M A n) : Parser Toks Tok M A n :=
   MkParser (fun _ mlen toks =>
-  alt (runParser p mlen toks) (runParser q mlen toks)).
+  alt (runParser p mlen toks) (fun _ => runParser q mlen toks)).
 
 Definition alts (ps : list (Parser Toks Tok M A n)) : Parser Toks Tok M A n :=
   List.fold_right alt fail ps.
@@ -66,7 +66,7 @@ Definition andmbind (p : Parser Toks Tok M A n)
   let salen   := Nat.le_trans _ _ _ (small sa) mlen in
   let combine := fun sb => Success.map (fun p => (fst p, Some (snd p))) (Success.and sa sb) in
   Category.alt (fmap combine (runParser (call (q (value sa)) salen) (Nat.le_refl _) (leftovers sa)))
-               (pure (Success.map (fun a => (a , None)) sa)))).
+               (fun _ => pure (Success.map (fun a => (a , None)) sa)))).
 
 (* This could be implemented in terms of andmbind + guardM but for
    efficiency reasons we give a direct implementation *)
@@ -179,7 +179,7 @@ Definition schainl_aux (n : nat) (rec : Box LChain n) : LChain n := fun sa op =>
   pure (lt_lift (small sa) res))).
 
 Definition schainl {n : nat} : LChain n :=
-  Fix LChain (fun n rec sa op => Category.alt (schainl_aux n rec sa op) (pure sa)) n.
+  Fix LChain (fun n rec sa op => Category.alt (schainl_aux n rec sa op) (fun _ => pure sa)) n.
 
 Definition iteratel {n : nat} (val : Parser Toks Tok M A n)
   (op : Box (Parser Toks Tok M (A -> A)) n) : Parser Toks Tok M A n :=
